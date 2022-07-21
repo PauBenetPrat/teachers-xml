@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Console\Commands;
 
 class TeacherCalendars
@@ -12,7 +11,7 @@ class TeacherCalendars
     public function dispatch()
     {
         foreach ($this->teachers as $teacher) {
-            (new Calendar($teacher))->create();
+            (new TeacherCalendar($teacher))->create();
         }
     }
 }

@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Console\Commands;
 
-class Calendar
+class TeacherCalendar
 {
-    protected $days = [
+    protected array $days = [
         'Dilluns',
         'Dimarts',
         'Dimecres',
@@ -23,18 +22,19 @@ class Calendar
         '15:00 - 16:00',
         '16:00 - 17:00',
     ];
+
     public function __construct(protected \SimpleXMLElement $teacher) {}
 
     public function create()
     {
-        $teacherName = $this->teacher->attributes()['name'];
-        $fp = fopen("storage/app/calendars/{$teacherName}.csv", 'w');
-        fputcsv($fp, ["Professor/a: {$teacherName}"]);
+        $teacher = $this->teacher->attributes();
+        $fp = fopen("storage/app/calendars/{$teacher}.csv", 'w');
+        fputcsv($fp, ["Professor/a: {$teacher}"]);
         fputcsv($fp, ['', ...$this->days]);
-        foreach ($this->hours as $hourIndex => $hour) {
+        foreach ($this->hours as $hour) {
             $hours = [$hour];
-            foreach ($this->days as $dayIndex => $day) {
-                $hours[] = $this->title($this->teacher->Day[$dayIndex]->Hour[$hourIndex]);
+            foreach ($this->days as $day) {
+                $hours[] = $this->title($this->lesson($day, $hour));
             }
             fputcsv($fp, $hours);
         }
@@ -43,9 +43,15 @@ class Calendar
 
     protected function title(\SimpleXMLElement $lesson): string
     {
-        if (! $students = $lesson->Students->attributes()['name'] ?? null) {
-            return $lesson->Subject->attributes()['name'] ?? '';
+        if (! $students = $lesson->Students->attributes()) {
+            return $lesson->Subject->attributes() ?? '';
         }
-        return "{$students} - " . $lesson->Subject->attributes()['name'] ?? '';
+
+        return "{$students} - {$lesson->Subject->attributes()}";
+    }
+
+    protected function lesson(string $day, string $hour): \SimpleXMLElement
+    {
+        return $this->teacher->xpath("Day[@name='{$day}']/Hour[@name='{$hour}']")[0];
     }
 }
