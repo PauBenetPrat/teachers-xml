@@ -19,10 +19,10 @@ class XMLUploadController extends BaseController
         (new TeacherCalendars($this->xmlFromRequest($request)))->dispatch();
 
         $zipPath = $this->zipFile();
-        $this->sendMail($request->email, $zipPath);
-        unlink($zipPath);
+//        $this->sendMail($request->email, $zipPath);
+        dispatch(fn() => unlink($zipPath))->afterResponse();
 
-        return back();
+        return response()->download($zipPath, now()->toDateTimeString().'-calendars.zip');
     }
 
     protected function zipFile(): string

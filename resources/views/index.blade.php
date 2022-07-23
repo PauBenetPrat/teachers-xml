@@ -36,9 +36,9 @@
                     <div class="grid grid-cols-1 md:grid-cols-2">
                         <form action="{{route('upload')}}" method="POST" enctype="multipart/form-data">
                             {{ csrf_field() }}
-                            <div style="margin: 10px">
-                                <input type="email" name="email" required value="ggracia@lasalle.net" />
-                            </div>
+{{--                            <div style="margin: 10px">--}}
+{{--                                <input type="email" name="email" required value="ggracia@lasalle.net" />--}}
+{{--                            </div>--}}
                             <div style="margin: 10px">
                                 <input type="file" name="xmlFile" required />
                             </div>
