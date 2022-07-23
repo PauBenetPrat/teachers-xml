@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Console\Commands\TeacherCalendars;
+use App\Models\TeacherCalendars;
 use DirectoryIterator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -16,8 +16,16 @@ class XMLUploadController extends BaseController
             return response()->withErrors(['error' => 'File is not valid'], 400);
         }
 
-        (new TeacherCalendars($this->xmlFromRequest($request)))->dispatch();
+        try {
+            $xml = $this->xmlFromRequest($request);
+        } catch (\Exception $e) {
+            return back()->withErrors('Could not load xml file');
+        }
 
+        $errors = (new TeacherCalendars($xml))->build();
+        if (count($errors)) {
+            return back()->withErrors($errors);
+        }
         $zipPath = $this->zipFile();
 //        $this->sendMail($request->email, $zipPath);
         dispatch(fn() => unlink($zipPath))->afterResponse();

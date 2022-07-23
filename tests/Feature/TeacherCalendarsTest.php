@@ -2,8 +2,7 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Console\Commands\TeacherCalendars;
+use App\Models\TeacherCalendars;
 use Tests\TestCase;
 
 class TeacherCalendarsTest extends TestCase
@@ -13,8 +12,8 @@ class TeacherCalendarsTest extends TestCase
     {
         $teachers = simplexml_load_file("storage/app/teachers.xml") or die("Failed to load");
 
-        (new TeacherCalendars($teachers))->dispatch();
+        $errors = (new TeacherCalendars($teachers))->build();
 
-        self::assertTrue(true);
+        self::assertCount(0, $errors);
     }
 }
