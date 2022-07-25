@@ -35,7 +35,8 @@ class TeacherCalendar
      */
     public function create()
     {
-        $fp = fopen(storage_path("app/calendars/{$this->teacher}.csv"), 'w');
+        $fp = fopen(storage_path("{$this->teacher}.csv"), 'w');
+//        $fp = fopen(storage_path("app/calendars/{$this->teacher}.csv"), 'w');
         fputcsv($fp, ["Professor/a: {$this->teacher}"]);
         fputcsv($fp, ['', ...self::$days]);
         foreach (self::$hours as $hour) {
