@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TeacherCalendars;
+use App\Services\Zipper;
 use DirectoryIterator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -26,30 +27,13 @@ class XMLUploadController extends BaseController
         if (count($errors)) {
             return back()->withErrors($errors);
         }
-        $zipPath = $this->zipFile();
+        $pathToZip = storage_path('app/calendars');
+        $zipPath = Zipper::zip($pathToZip);
+
+        array_map('unlink', glob("{$pathToZip}/*.*"));
         dispatch(fn() => unlink($zipPath))->afterResponse();
 
         return response()->download($zipPath, now()->toDateTimeString().'-calendars.zip');
-    }
-
-    protected function zipFile(): string
-    {
-        $zipPath = storage_path(uniqid().'-teachers.zip');
-        $calendarsPath = storage_path('app/calendars/');
-
-        $zip = new \ZipArchive();
-        $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-
-        $dir = new DirectoryIterator($calendarsPath);
-        foreach ($dir as $file) {
-            if (!$file->isDot()) {
-                $zip->addFile($file->getRealPath(), $file->getFilename());
-            }
-        }
-        $zip->close();
-        rmdir($calendarsPath);
-
-        return $zipPath;
     }
 
     protected function xmlFromRequest(Request $request): \SimpleXMLElement
