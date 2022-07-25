@@ -35,17 +35,19 @@ class XMLUploadController extends BaseController
     protected function zipFile(): string
     {
         $zipPath = storage_path(uniqid().'-teachers.zip');
+        $calendarsPath = storage_path('app/calendars/');
 
         $zip = new \ZipArchive();
         $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
-        $dir = new DirectoryIterator(storage_path('app/calendars'));
+        $dir = new DirectoryIterator($calendarsPath);
         foreach ($dir as $file) {
             if (!$file->isDot()) {
                 $zip->addFile($file->getRealPath(), $file->getFilename());
             }
         }
         $zip->close();
+        rmdir($calendarsPath);
 
         return $zipPath;
     }
