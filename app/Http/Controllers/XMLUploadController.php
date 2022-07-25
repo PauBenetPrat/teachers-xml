@@ -27,7 +27,6 @@ class XMLUploadController extends BaseController
             return back()->withErrors($errors);
         }
         $zipPath = $this->zipFile();
-//        $this->sendMail($request->email, $zipPath);
         dispatch(fn() => unlink($zipPath))->afterResponse();
 
         return response()->download($zipPath, now()->toDateTimeString().'-calendars.zip');
@@ -35,32 +34,20 @@ class XMLUploadController extends BaseController
 
     protected function zipFile(): string
     {
-        $zip_file = public_path('storage/'.uniqid().'-teachers.zip');
+        $zipPath = storage_path(uniqid().'-teachers.zip');
 
         $zip = new \ZipArchive();
-        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
         $dir = new DirectoryIterator(storage_path('app/calendars'));
-        foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()) {
-                $zip->addFile($fileinfo->getRealPath(), $fileinfo->getFilename());
+        foreach ($dir as $file) {
+            if (!$file->isDot()) {
+                $zip->addFile($file->getRealPath(), $file->getFilename());
             }
         }
         $zip->close();
 
-        return $zip_file;
-    }
-
-    protected function sendMail(string $email, string $zipPath): void
-    {
-        Mail::html('Attached calendars', function ($message) use ($email, $zipPath) {
-            $message->to($email)
-                ->subject('Calendars');
-            $message->attach($zipPath, [
-                'as'   => now()->format('YmdHis').'-calendars.zip',
-                'mime' => 'application/zip',
-            ]);
-        });
+        return $zipPath;
     }
 
     protected function xmlFromRequest(Request $request): \SimpleXMLElement
