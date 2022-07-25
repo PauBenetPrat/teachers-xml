@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\TeacherException;
+use function PHPUnit\Framework\directoryExists;
 
 class TeacherCalendar
 {
@@ -35,8 +36,11 @@ class TeacherCalendar
      */
     public function create()
     {
-        $fp = fopen(storage_path("{$this->teacher}.csv"), 'w');
-//        $fp = fopen(storage_path("app/calendars/{$this->teacher}.csv"), 'w');
+        $directoryPath = storage_path('app/calendars/');
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0777, true);
+        }
+        $fp = fopen("{$directoryPath}/{$this->teacher}.csv", 'w');
         fputcsv($fp, ["Professor/a: {$this->teacher}"]);
         fputcsv($fp, ['', ...self::$days]);
         foreach (self::$hours as $hour) {
