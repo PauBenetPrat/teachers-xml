@@ -200,13 +200,16 @@
                                 @endforeach
                             </div>
                         @endif
-                        <form action="{{route('download')}}" method="POST" enctype="multipart/form-data">
+                        <form action="{{route('export')}}" method="POST" enctype="multipart/form-data">
                             {{ csrf_field() }}
                             <div style="margin: 10px">
                                 <input type="file" name="xmlFile" required />
                             </div>
+                            <div style="margin: 10px; font-size: 12px; font-weight: bold">
+                                <label>To CSV </label><input type="checkbox" name="toCsv" />
+                            </div>
                             <div style="margin: 10px">
-                                <input type="submit" value="Export XLS" style="
+                                <input type="submit" value="Export" style="
                                     background-color: cornflowerblue; font-weight: bold; color: darkslategrey; padding: 4px; border-radius: 4px;
                                 ">
                             </div>

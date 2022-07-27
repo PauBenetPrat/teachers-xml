@@ -14,5 +14,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('', 'App\Http\Controllers\CalendarsController@index');
-Route::post('download', 'App\Http\Controllers\CalendarsController@export')->name('download');
-Route::post('upload', 'App\Http\Controllers\XMLUploadController@export')->name('upload');
+Route::post('export', 'App\Http\Controllers\CalendarsController@export')->name('export');

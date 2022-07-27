@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Exports\CalendarsExport;
 use App\Models\TeacherCalendars;
 use App\Models\TeacherCalendarsXMLLoader;
-use App\Services\Zipper;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Maatwebsite\Excel\Excel;
@@ -30,25 +29,18 @@ class CalendarsController extends BaseController
         }
 
         $calendars = (new TeacherCalendars($xml));
-        $calendarsCollection = $calendars->collection();
         if (count($calendars->errors)) {
             return back()->withErrors($calendars->errors);
         }
 
-        $exporter = new CalendarsExport($calendarsCollection);
-//         return $exporter->raw(Excel::CSV);
-        return $exporter->download(now()->toDateTimeString().'.xlsx', Excel::XLSX);
-//        return $exporter->download(now()->toDateTimeString().'.csv', \Maatwebsite\Excel\Excel::CSV);  // TODO: zip csvs
-    }
+        if ($request->has('toCsv')) {
+            $zipPath = $calendars->getCsvsZip();
+            dispatch(fn() => unlink($zipPath))->afterResponse();
 
-//    public function zip()
-//    {
-//        $pathToZip = storage_path('app/calendars');
-//        $zipPath = Zipper::zip($pathToZip);
-//
-//        array_map('unlink', glob("{$pathToZip}/*.*"));
-//        dispatch(fn() => unlink($zipPath))->afterResponse();
-//
-//        return response()->download($zipPath, now()->toDateTimeString().'-calendars.zip');
-//    }
+            return response()->download($zipPath, now()->toDateTimeString().'-calendars.zip');
+        }
+        $exporter = new CalendarsExport($calendars->collection);
+//        return $exporter->raw(Excel::CSV);
+        return $exporter->download(now()->toDateTimeString().'.xlsx', Excel::XLSX);
+    }
 }
