@@ -192,22 +192,21 @@
                                 </div>
                             </div>
                         </div>
-                        <form action="{{route('upload')}}" method="POST" enctype="multipart/form-data">
+                        @if ($errors->count())
+                            <div style="color: red; margin:10px">
+                                @foreach ($errors->all() as $error)
+                                    {{ $error }}
+                                    <br>
+                                @endforeach
+                            </div>
+                        @endif
+                        <form action="{{route('download')}}" method="POST" enctype="multipart/form-data">
                             {{ csrf_field() }}
                             <div style="margin: 10px">
                                 <input type="file" name="xmlFile" required />
                             </div>
                             <div style="margin: 10px">
-                                @if ($errors->count())
-                                    <div style="color: red">
-                                        @foreach ($errors->all() as $error)
-                                            {{ $error }}
-                                            <br>
-                                        @endforeach
-                                    </div>
-                                @endif
-
-                                <input type="submit" style="
+                                <input type="submit" value="Export XLS" style="
                                     background-color: cornflowerblue; font-weight: bold; color: darkslategrey; padding: 4px; border-radius: 4px;
                                 ">
                             </div>

@@ -3,23 +3,25 @@
 namespace App\Models;
 
 use App\Exceptions\TeacherException;
+use Illuminate\Support\Collection;
 
 class TeacherCalendars
 {
-    public function __construct(protected \SimpleXMLElement $teachers)
+    public array $errors = [];
+
+    public function __construct(protected Collection $teachers)
     {
     }
 
-    public function build(): array
+    public function collection(): Collection
     {
-        $errors = [];
-        foreach ($this->teachers as $teacher) {
+        return $this->teachers->mapWithKeys(function ($calendar, $teacher) {
             try {
-                (new TeacherCalendar($teacher))->create();
+                return [$teacher => (new TeacherCalendar($teacher, $calendar))->collection()];
             } catch (TeacherException $e) {
-                $errors[] = $e->getMessage();
+                $this->errors[] = $e->getMessage();
             }
-        }
-        return $errors;
+            return [];
+        })->filter();
     }
 }
