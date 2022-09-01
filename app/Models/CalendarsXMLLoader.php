@@ -5,7 +5,7 @@ namespace App\Models;
 
 use Illuminate\Support\Collection;
 
-class TeacherCalendarsXMLLoader
+class CalendarsXMLLoader
 {
     public static function load(string $contents): Collection
     {

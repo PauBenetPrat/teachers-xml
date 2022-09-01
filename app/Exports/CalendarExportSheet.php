@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\TeacherCalendar;
+use App\Models\Calendar;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -13,7 +13,7 @@ class CalendarExportSheet implements FromCollection, WithHeadings, WithTitle
 {
     use Exportable;
 
-    public function __construct(protected string $teacher,protected Collection $calendar)
+    public function __construct(protected string $person, protected Collection $calendar, protected bool $asSubgroup = false)
     {
     }
 
@@ -28,13 +28,13 @@ class CalendarExportSheet implements FromCollection, WithHeadings, WithTitle
     public function headings(): array
     {
         return [
-            ["Professor/a: {$this->teacher}"],
-            ['', ...TeacherCalendar::$days],
+            [($this->asSubgroup ? "Subgrup " : "Professor/a: ") . $this->person],
+            ['', ...Calendar::$days],
         ];
     }
 
     public function title(): string
     {
-        return $this->teacher;
+        return $this->person;
     }
 }

@@ -169,7 +169,7 @@
                                     <thead>
                                     <tr>
                                         <th class="headcol"></th>
-                                        @foreach(App\Models\TeacherCalendar::$days as $day)
+                                        @foreach(App\Models\Calendar::$days as $day)
                                             <th>{{$day}}</th>
                                         @endforeach
                                     </tr>
@@ -178,10 +178,10 @@
                                 <div class="wrap">
                                     <table class="offset">
                                         <tbody>
-                                        @foreach(App\Models\TeacherCalendar::$hours as $hour)
+                                        @foreach(App\Models\Calendar::$hours as $hour)
                                             <tr>
                                                 <td class="headcol">{{$hour}}</td>
-                                                @foreach(App\Models\TeacherCalendar::$days as $day)
+                                                @foreach(App\Models\Calendar::$days as $day)
                                                     <td>
                                                         {{--                                        <input type="checkbox" name="{{$day}}[{{$hour}}]" value="1">--}}
                                                     </td>
@@ -207,6 +207,9 @@
                             </div>
                             <div style="margin: 10px; font-size: 12px; font-weight: bold">
                                 <label>To CSV </label><input type="checkbox" name="toCsv" />
+                            </div>
+                            <div style="margin: 10px; font-size: 12px; font-weight: bold">
+                                <label>Subgroup calendar</label><input type="checkbox" name="asSubgroup" />
                             </div>
                             <div style="margin: 10px">
                                 <input type="submit" value="Export" style="

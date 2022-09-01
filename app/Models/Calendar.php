@@ -1,12 +1,12 @@
 <?php
 
+
 namespace App\Models;
 
-use App\Exceptions\TeacherException;
+use App\Exceptions\CalendarException;
 use Illuminate\Support\Collection;
-use function PHPUnit\Framework\directoryExists;
 
-class TeacherCalendar
+class Calendar
 {
     public static array $days = [
         'Dilluns',
@@ -27,7 +27,7 @@ class TeacherCalendar
         '16:00 - 17:00',
     ];
 
-    public function __construct(protected string $teacher, protected Collection $calendar)
+    public function __construct(protected string $person, protected Collection $calendar, protected bool $asSubgroup = false)
     {
     }
 
@@ -44,14 +44,16 @@ class TeacherCalendar
     }
 
     /**
-     * @throws TeacherException
+     * @throws CalendarException
      */
     protected function lesson(string $day, string $hour): Lesson
     {
         try {
-            return (new Lesson($this->calendar, $day, $hour));
+            return $this->asSubgroup
+                ? (new SubgroupLesson($this->calendar, $day, $hour))
+                : (new TeacherLesson($this->calendar, $day, $hour));
         } catch (\Throwable $e) {
-            throw new TeacherException("No lesson found for {$this->teacher} at {$day} {$hour}");
+            throw new CalendarException("No lesson found for {$this->person} at {$day} {$hour}");
         }
     }
 }

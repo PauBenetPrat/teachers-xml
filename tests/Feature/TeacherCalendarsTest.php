@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\TeacherCalendars;
+use App\Models\Calendars;
 use Tests\TestCase;
 
 class TeacherCalendarsTest extends TestCase
@@ -12,7 +12,7 @@ class TeacherCalendarsTest extends TestCase
     {
         $teachers = simplexml_load_file("storage/app/teachers.xml") or die("Failed to load");
 
-        $errors = (new TeacherCalendars($teachers))->build();
+        $errors = (new Calendars($teachers))->build();
 
         self::assertCount(0, $errors);
     }

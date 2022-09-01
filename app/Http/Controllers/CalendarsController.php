@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\CalendarsExport;
-use App\Models\TeacherCalendars;
-use App\Models\TeacherCalendarsXMLLoader;
+use App\Models\Calendars;
+use App\Models\CalendarsXMLLoader;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Maatwebsite\Excel\Excel;
@@ -23,12 +23,12 @@ class CalendarsController extends BaseController
         }
 
         try {
-            $xml = TeacherCalendarsXMLLoader::load($request->file('xmlFile')->getContent());
+            $xml = CalendarsXMLLoader::load($request->file('xmlFile')->getContent());
         } catch (\Exception $e) {
             return back()->withErrors('Could not load xml file');
         }
 
-        $calendars = (new TeacherCalendars($xml));
+        $calendars = (new Calendars($xml, $request->has('asSubgroup')));
         if (count($calendars->errors)) {
             return back()->withErrors($calendars->errors);
         }
@@ -39,7 +39,7 @@ class CalendarsController extends BaseController
 
             return response()->download($zipPath, now()->toDateTimeString().'-calendars.zip');
         }
-        $exporter = new CalendarsExport($calendars->collection);
+        $exporter = new CalendarsExport($calendars->collection, $request->has('asSubgroup'));
 //        return $exporter->raw(Excel::CSV);
         return $exporter->download(now()->toDateTimeString().'.xlsx', Excel::XLSX);
     }

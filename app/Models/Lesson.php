@@ -5,7 +5,7 @@ namespace App\Models;
 
 use Illuminate\Support\Collection;
 
-class Lesson
+abstract class Lesson
 {
     public string $title;
 
@@ -14,13 +14,5 @@ class Lesson
         $this->title = $this->title($calendar[$day][$hour]);
     }
 
-    public function title(array $lesson): string
-    {
-        if (! $students = $lesson['Students'] ?? null) {
-            return $lesson['Subject'] ?? '';
-        }
-
-        return "{$students} - {$lesson['Subject']}";
-    }
-
+    abstract public function title(array $lesson): string;
 }

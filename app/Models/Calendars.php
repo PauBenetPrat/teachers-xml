@@ -2,26 +2,26 @@
 
 namespace App\Models;
 
-use App\Exceptions\TeacherException;
+use App\Exceptions\CalendarException;
 use App\Services\Zipper;
 use Illuminate\Support\Collection;
 
-class TeacherCalendars
+class Calendars
 {
     public array $errors = [];
     public Collection $collection;
 
-    public function __construct(Collection $teachers)
+    public function __construct(Collection $people, protected bool $asSubgroup = false)
     {
-        $this->collection = $this->collection($teachers);
+        $this->collection = $this->collection($people);
     }
 
-    protected function collection(Collection $teachers): Collection
+    protected function collection(Collection $people): Collection
     {
-        return $teachers->mapWithKeys(function ($calendar, $teacher) {
+        return $people->mapWithKeys(function ($calendar, $person) {
             try {
-                return [$teacher => (new TeacherCalendar($teacher, $calendar))->collection()];
-            } catch (TeacherException $e) {
+                return [$person => (new Calendar($person, $calendar, $this->asSubgroup))->collection()];
+            } catch (CalendarException $e) {
                 $this->errors[] = $e->getMessage();
             }
             return [];
@@ -45,14 +45,16 @@ class TeacherCalendars
 
     protected function exportCsvs()
     {
-        $this->collection->each(function ($calendar, $teacher) {
+        $this->collection->each(function ($calendar, $person) {
             $directoryPath = storage_path('app/calendars/');
             if (!file_exists($directoryPath)) {
                 mkdir($directoryPath, 0777, true);
             }
-            $fp = fopen("{$directoryPath}/{$teacher}.csv", 'w');
-            fputcsv($fp, ["Professor/a: {$teacher}"]);
-            fputcsv($fp, ['', ...TeacherCalendar::$days]);
+            $fp = fopen("{$directoryPath}/{$person}.csv", 'w');
+            fputcsv($fp, [
+                ($this->asSubgroup ? "Subgrup " : "Professor/a: ") . $person
+            ]);
+            fputcsv($fp, ['', ...Calendar::$days]);
             $calendar->each(function (array $hour) use ($fp) {
                 fputcsv($fp, $hour);
             });
