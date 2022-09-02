@@ -7,9 +7,9 @@ class GroupLesson extends Lesson
 {
     public function title(array $lesson): string
     {
-        if (! $teachers = $lesson['Teacher'] ?? null) {
-            return $lesson['Subject'] ?? '';
+        if (! isset($lesson['Teacher'])) {
+            return '';
         }
-        return "{$teachers} - {$lesson['Subject']}";
+        return "{$lesson['Subject']} - {$lesson['Teacher']}";
     }
 }
