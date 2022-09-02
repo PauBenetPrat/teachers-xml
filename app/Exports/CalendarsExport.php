@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\CalendarType;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -11,7 +12,7 @@ class CalendarsExport implements FromCollection, WithMultipleSheets
 {
     use Exportable;
 
-    public function __construct(protected Collection $calendars, protected bool $asSubgroup = false)
+    public function __construct(protected Collection $calendars, protected CalendarType $type)
     {
     }
 
@@ -25,6 +26,8 @@ class CalendarsExport implements FromCollection, WithMultipleSheets
 
     public function sheets(): array
     {
-        return $this->calendars->map(fn($calendar, $teacher) => new CalendarExportSheet($teacher, $calendar, $this->asSubgroup))->all();
+        return $this->calendars->map(fn($calendar, $teacher) =>
+            new CalendarExportSheet($teacher, $calendar, $this->type)
+        )->all();
     }
 }

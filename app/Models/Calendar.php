@@ -4,6 +4,7 @@
 namespace App\Models;
 
 use App\Exceptions\CalendarException;
+use App\Models\Lessons\Lesson;
 use Illuminate\Support\Collection;
 
 class Calendar
@@ -27,7 +28,7 @@ class Calendar
         '16:00 - 17:00',
     ];
 
-    public function __construct(protected string $person, protected Collection $calendar, protected bool $asSubgroup = false)
+    public function __construct(protected string $person, protected Collection $calendar, protected CalendarType $calendarType)
     {
     }
 
@@ -49,9 +50,7 @@ class Calendar
     protected function lesson(string $day, string $hour): Lesson
     {
         try {
-            return $this->asSubgroup
-                ? (new SubgroupLesson($this->calendar, $day, $hour))
-                : (new TeacherLesson($this->calendar, $day, $hour));
+            return $this->calendarType->lesson($this->calendar, $day, $hour);
         } catch (\Throwable $e) {
             throw new CalendarException("No lesson found for {$this->person} at {$day} {$hour}");
         }

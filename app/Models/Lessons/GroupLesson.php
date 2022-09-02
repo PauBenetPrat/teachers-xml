@@ -1,9 +1,9 @@
 <?php
 
 
-namespace App\Models;
+namespace App\Models\Lessons;
 
-class SubgroupLesson extends Lesson
+class GroupLesson extends Lesson
 {
     public function title(array $lesson): string
     {

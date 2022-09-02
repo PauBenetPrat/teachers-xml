@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Models;
+namespace App\Models\Lessons;
 
 use Illuminate\Support\Collection;
 

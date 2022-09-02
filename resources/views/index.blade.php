@@ -209,7 +209,7 @@
                                 <label>To CSV </label><input type="checkbox" name="toCsv" />
                             </div>
                             <div style="margin: 10px; font-size: 12px; font-weight: bold">
-                                <label>Subgroup calendar</label><input type="checkbox" name="asSubgroup" />
+                                <label>Subgroup calendar</label><input type="checkbox" name="asGroup" />
                             </div>
                             <div style="margin: 10px">
                                 <input type="submit" value="Export" style="

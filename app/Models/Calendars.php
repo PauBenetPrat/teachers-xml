@@ -11,7 +11,7 @@ class Calendars
     public array $errors = [];
     public Collection $collection;
 
-    public function __construct(Collection $people, protected bool $asSubgroup = false)
+    public function __construct(Collection $people, protected CalendarType $calendarType)
     {
         $this->collection = $this->collection($people);
     }
@@ -20,7 +20,7 @@ class Calendars
     {
         return $people->mapWithKeys(function ($calendar, $person) {
             try {
-                return [$person => (new Calendar($person, $calendar, $this->asSubgroup))->collection()];
+                return [$person => (new Calendar($person, $calendar, $this->calendarType))->collection()];
             } catch (CalendarException $e) {
                 $this->errors[] = $e->getMessage();
             }
@@ -52,7 +52,7 @@ class Calendars
             }
             $fp = fopen("{$directoryPath}/{$person}.csv", 'w');
             fputcsv($fp, [
-                ($this->asSubgroup ? "Subgrup " : "Professor/a: ") . $person
+                $this->calendarType->header($person)
             ]);
             fputcsv($fp, ['', ...Calendar::$days]);
             $calendar->each(function (array $hour) use ($fp) {
